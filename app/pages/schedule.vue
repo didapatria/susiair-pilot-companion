@@ -13,6 +13,20 @@ const current = ref({
   month: Number(APP_TODAY.slice(5, 7)),
 })
 
+function stepMonth(delta: 1 | -1) {
+  let { year, month } = current.value
+  month += delta
+  if (month === 0) {
+    month = 12
+    year -= 1
+  }
+  else if (month === 13) {
+    month = 1
+    year += 1
+  }
+  current.value = { year, month }
+}
+
 const selected = ref<ScheduleRecord | null>(null)
 let lastFocus: HTMLElement | null = null
 
@@ -61,6 +75,7 @@ const monthCounts = computed(() => {
           :year="current.year"
           :month="current.month"
           @select="openSheet"
+          @step="delta => stepMonth(delta)"
         />
       </section>
       <CalendarLegend class="appear" :counts="monthCounts" />
@@ -78,11 +93,10 @@ const monthCounts = computed(() => {
 
     <BottomSheet
       :open="selected !== null"
-      :title="selected ? `Duty on ${formatFullDate(selected.duty_date)}` : 'Duty'"
+      :title="selected ? formatFullDate(selected.duty_date) : 'Duty'"
       @close="closeSheet"
     >
       <template v-if="selected">
-        <h2 class="schedule__sheet-title">{{ formatFullDate(selected.duty_date) }}</h2>
         <p>
           <StatusPill tone="neutral">{{ selectedDutyLabel }} · {{ selected.base_name }}</StatusPill>
         </p>
@@ -102,11 +116,6 @@ const monthCounts = computed(() => {
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
-  }
-
-  &__sheet-title {
-    @include type('title');
-    color: var(--color-primary);
   }
 
   &__sheet-body {

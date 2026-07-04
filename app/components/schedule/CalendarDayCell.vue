@@ -10,6 +10,8 @@ const props = defineProps<{
   /** Legend label for the record's duty_type, e.g. "On Duty" */
   dutyLabel?: string
   isToday: boolean
+  /** Roving-tabindex owner: the one in-month cell reachable with Tab */
+  tabbable?: boolean
 }>()
 
 const emit = defineEmits<{ select: [record: ScheduleRecord, event: Event] }>()
@@ -47,6 +49,9 @@ const srDetail = computed(() => {
       'day-cell--today': isToday,
     }"
     :type="record && cell.inMonth ? 'button' : undefined"
+    role="gridcell"
+    :tabindex="cell.inMonth ? (tabbable ? 0 : -1) : undefined"
+    :data-iso="cell.inMonth ? cell.iso : undefined"
     @click="record && cell.inMonth && emit('select', record, $event)"
   >
     <span class="day-cell__number">{{ cell.day }}</span>

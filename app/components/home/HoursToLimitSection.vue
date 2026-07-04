@@ -10,6 +10,17 @@ const toggles = computed<BoundsKey[]>(() =>
 )
 const series = computed(() => engine.value?.series(selected.value) ?? null)
 const ready = computed(() => store.status === 'ready')
+
+/** Announced on toggle change so screen readers hear what the chart now shows. */
+const announcement = computed(() => {
+  if (!series.value) return ''
+  const { points, bounds } = series.value
+  const peak = points.reduce((a, b) => (b.value > a.value ? b : a))
+  const status = peak.value > bounds.limit
+    ? `Peak ${formatHours(peak.value)} hours on ${formatDayMonth(peak.date)}, above the ${bounds.limit} hour limit.`
+    : `Within the ${bounds.limit} hour limit.`
+  return `Rolling ${bounds.windowDays}-day view. ${status}`
+})
 </script>
 
 <template>
@@ -28,6 +39,7 @@ const ready = computed(() => store.status === 'ready')
         </div>
         <TrendChart :series="series" />
         <RangeToggle v-model="selected" :options="toggles" />
+        <p class="visually-hidden" aria-live="polite">{{ announcement }}</p>
       </AppCard>
     </template>
 

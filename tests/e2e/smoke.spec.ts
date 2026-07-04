@@ -51,7 +51,7 @@ test('sign in, browse the dashboard and open the schedule', async ({ page }) => 
   await page.waitForTimeout(700)
   await page.screenshot(shot('schedule-may'))
 
-  await page.getByRole('button', { name: /^31 2 MKW/ }).click()
+  await page.getByRole('gridcell', { name: /^31 2 MKW/ }).click()
   await expect(page.getByText('Detail page coming soon.')).toBeVisible()
   await page.waitForTimeout(400)
   await page.screenshot(shot('schedule-tap'))

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { ComponentPublicInstance } from 'vue'
+
 const props = defineProps<{
   open: boolean
   title: string
@@ -7,12 +9,39 @@ const props = defineProps<{
 const emit = defineEmits<{ close: [] }>()
 
 const panel = ref<HTMLElement | null>(null)
+const closeButton = ref<ComponentPublicInstance | null>(null)
+const titleId = useId()
 
 watch(() => props.open, async (open) => {
+  document.body.style.overflow = open ? 'hidden' : ''
   if (!open) return
   await nextTick()
-  panel.value?.focus()
+  ;(closeButton.value?.$el as HTMLElement | undefined)?.focus()
 })
+
+onBeforeUnmount(() => {
+  document.body.style.overflow = ''
+})
+
+/** Keep Tab cycling inside the dialog while it is open. */
+function trapTab(event: KeyboardEvent) {
+  if (event.key !== 'Tab' || !panel.value) return
+  const nodes = panel.value.querySelectorAll<HTMLElement>(
+    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+  )
+  if (!nodes.length) return
+  const first = nodes[0]!
+  const last = nodes[nodes.length - 1]!
+  const active = document.activeElement
+  if (event.shiftKey && (active === first || active === panel.value)) {
+    event.preventDefault()
+    last.focus()
+  }
+  else if (!event.shiftKey && active === last) {
+    event.preventDefault()
+    first.focus()
+  }
+}
 </script>
 
 <template>
@@ -25,13 +54,15 @@ watch(() => props.open, async (open) => {
           class="bottom-sheet__panel"
           role="dialog"
           aria-modal="true"
-          :aria-label="title"
+          :aria-labelledby="titleId"
           tabindex="-1"
           @keydown.esc="emit('close')"
+          @keydown="trapTab"
         >
           <div class="bottom-sheet__grab" aria-hidden="true" />
+          <h2 :id="titleId" class="bottom-sheet__title">{{ title }}</h2>
           <slot />
-          <AppButton variant="secondary" @click="emit('close')">Close</AppButton>
+          <AppButton ref="closeButton" variant="secondary" @click="emit('close')">Close</AppButton>
         </div>
       </div>
     </Transition>
@@ -72,6 +103,11 @@ watch(() => props.open, async (open) => {
     margin-inline: auto;
     background: var(--color-border);
     border-radius: var(--radius-full);
+  }
+
+  &__title {
+    @include type('title');
+    color: var(--color-primary);
   }
 }
 
