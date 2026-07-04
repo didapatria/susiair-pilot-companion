@@ -1,0 +1,60 @@
+@use '../abstracts/tokens' as t;
+
+:root {
+  @each $k, $v in t.$colors {
+    --color-#{$k}: #{$v};
+  }
+  @each $k, $v in t.$spacing {
+    --space-#{$k}: #{$v};
+  }
+  @each $k, $v in t.$radii {
+    --radius-#{$k}: #{$v};
+  }
+  @each $k, $v in t.$shadows {
+    --shadow-#{$k}: #{$v};
+  }
+  @each $k, $v in t.$z {
+    --z-#{$k}: #{$v};
+  }
+  @each $k, $v in t.$motion {
+    --motion-#{$k}: #{$v};
+  }
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', Inter, system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.page {
+  max-width: 720px;
+  margin-inline: auto;
+  padding-inline: var(--space-5);
+
+  @media (min-width: 640px) {
+    padding-inline: var(--space-6);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

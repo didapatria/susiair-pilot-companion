@@ -1,0 +1,39 @@
+@use 'sass:list';
+@use 'sass:map';
+@use 'tokens' as t;
+
+@mixin type($key) {
+  $def: map.get(t.$type-scale, $key);
+  font-size: list.nth($def, 1);
+  line-height: list.nth($def, 2);
+  font-weight: list.nth($def, 3);
+}
+
+// Bold tabular figures for all numeric data (hours, times, counts).
+@mixin numeric {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum';
+}
+
+@mixin pressable {
+  transition:
+    transform map.get(t.$motion, 'fast') t.$ease-standard,
+    background-color map.get(t.$motion, 'fast') t.$ease-standard;
+  -webkit-tap-highlight-color: transparent;
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
