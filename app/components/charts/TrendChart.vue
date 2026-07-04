@@ -24,18 +24,34 @@ function yAt(value: number): number {
 }
 
 const pts = computed(() => {
-  const center = (props.series.points.length - 1) / 2
-  return props.series.points.map((p, i) => ({
-    date: p.date,
-    value: p.value,
-    x: xAt(i),
-    y: yAt(p.value),
-    over: p.value > props.series.bounds.limit,
-    isToday: i === center,
-    day: String(Number(p.date.slice(8, 10))),
-    isMonthStart: p.date.slice(8, 10) === '01',
-  }))
+  const points = props.series.points
+  const center = (points.length - 1) / 2
+  let peakIdx = 0
+  points.forEach((p, i) => {
+    if (p.value > points[peakIdx]!.value) peakIdx = i
+  })
+  return points.map((p, i) => {
+    const over = p.value > props.series.bounds.limit
+    const isToday = i === center
+    const isPeak = i === peakIdx
+    return {
+      date: p.date,
+      value: p.value,
+      x: xAt(i),
+      y: yAt(p.value),
+      over,
+      isToday,
+      isPeak,
+      // Dots only where they carry information: endpoints, today, the window
+      // peak, and every over-limit point — anything else is noise.
+      showDot: i === 0 || i === points.length - 1 || isToday || isPeak || over,
+      day: String(Number(p.date.slice(8, 10))),
+      isMonthStart: p.date.slice(8, 10) === '01',
+    }
+  })
 })
+
+const dots = computed(() => pts.value.filter(p => p.showDot))
 
 const gridlines = computed(() =>
   [0, 1, 2, 3, 4].map((i) => {
@@ -57,6 +73,27 @@ const overBandPath = computed(() => {
 })
 
 const todayPoint = computed(() => pts.value[(props.series.points.length - 1) / 2]!)
+
+/** Persistent annotation on the window peak, only when it exceeds the limit. */
+const annotation = computed(() => {
+  const peak = pts.value.find(p => p.isPeak)
+  if (!peak || peak.value <= props.series.bounds.limit) return null
+  const label = `${formatHours(peak.value)} h · ${formatDayMonth(peak.date)}`
+  const w = label.length * 5.2 + 12
+  const h = 16
+  const x = Math.min(Math.max(peak.x - w / 2, PLOT.left), plotRight - w)
+  const above = peak.y - 10 - h
+  const flipped = above < 2
+  const y = flipped ? peak.y + 12 : above
+  return { label, w, h, x, y, flipped, px: peak.x, py: peak.y }
+})
+
+const limitChip = computed(() => {
+  const label = `${props.series.bounds.limit} h limit`
+  const w = label.length * 5 + 12
+  // Sits just above the line so it never collides with the series around the limit.
+  return { label, w, x: plotRight - w, y: limitY.value - 20 }
+})
 
 const ariaLabel = computed(() => {
   const first = props.series.points[0]!
@@ -140,7 +177,7 @@ const tooltip = computed(() => {
         >{{ formatDayMonth(p.date).split(' ')[1] }}</tspan>
       </text>
 
-      <!-- Today marker -->
+      <!-- Today marker (promoted: the primary reference in normal ops) -->
       <line
         class="trend-chart__today"
         :x1="todayPoint.x"
@@ -148,8 +185,11 @@ const tooltip = computed(() => {
         :y1="PLOT.top"
         :y2="plotBottom"
       />
+      <text class="trend-chart__today-label" :x="todayPoint.x" :y="PLOT.top - 6" text-anchor="middle">
+        TODAY
+      </text>
 
-      <!-- Red limit line + label -->
+      <!-- Red limit line + chip label on the line -->
       <line
         class="trend-chart__limit"
         :x1="PLOT.left"
@@ -157,9 +197,12 @@ const tooltip = computed(() => {
         :y1="limitY"
         :y2="limitY"
       />
-      <text class="trend-chart__limit-label" :x="plotRight" :y="limitY - 5" text-anchor="end">
-        {{ series.bounds.limit }} h limit
-      </text>
+      <g class="trend-chart__limit-chip">
+        <rect :x="limitChip.x" :y="limitChip.y" :width="limitChip.w" height="16" rx="4" />
+        <text :x="limitChip.x + limitChip.w / 2" :y="limitChip.y + 11.5" text-anchor="middle">
+          {{ limitChip.label }}
+        </text>
+      </g>
 
       <!-- Series (keyed by toggle so the draw-in restarts on change) -->
       <g :key="series.toggle">
@@ -182,14 +225,37 @@ const tooltip = computed(() => {
           :clip-path="`url(#${clipId})`"
         />
         <circle
-          v-for="p in pts"
+          v-for="p in dots"
           :key="p.date"
           class="trend-chart__dot"
           :class="{ 'trend-chart__dot--over': p.over, 'trend-chart__dot--today': p.isToday }"
           :cx="p.x"
           :cy="p.y"
-          :r="p.isToday ? 4.5 : p.over ? 3 : 2.5"
+          :r="p.isToday ? 5 : p.over ? 3 : 2.5"
         />
+
+        <!-- One-time tap affordance: today dot emits a short halo after draw-in -->
+        <circle
+          class="trend-chart__halo"
+          :cx="todayPoint.x"
+          :cy="todayPoint.y"
+          r="5"
+        />
+
+        <!-- Peak annotation: the window's story, shown only when the peak exceeds the limit -->
+        <g v-if="annotation" class="trend-chart__anno">
+          <line
+            class="trend-chart__anno-leader"
+            :x1="annotation.px"
+            :x2="annotation.px"
+            :y1="annotation.flipped ? annotation.py + 4 : annotation.y + annotation.h"
+            :y2="annotation.flipped ? annotation.y : annotation.py - 4"
+          />
+          <rect :x="annotation.x" :y="annotation.y" :width="annotation.w" :height="annotation.h" rx="4" />
+          <text :x="annotation.x + annotation.w / 2" :y="annotation.y + 11.5" text-anchor="middle">
+            {{ annotation.label }}
+          </text>
+        </g>
       </g>
 
       <!-- Tap targets -->
@@ -275,9 +341,15 @@ const tooltip = computed(() => {
 
   &__today {
     stroke: var(--color-primary);
-    stroke-width: 1;
-    stroke-dasharray: 2 3;
-    opacity: 0.7;
+    stroke-width: 1.5;
+    stroke-dasharray: 3 3;
+  }
+
+  &__today-label {
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    fill: var(--color-primary);
   }
 
   &__limit {
@@ -286,13 +358,45 @@ const tooltip = computed(() => {
     stroke-dasharray: 4 4;
   }
 
-  &__limit-label {
-    font-size: 10px;
-    font-weight: 700;
-    fill: var(--color-accent);
-    paint-order: stroke;
-    stroke: var(--color-surface);
-    stroke-width: 3px;
+  &__limit-chip {
+    rect {
+      fill: var(--color-danger-soft);
+    }
+
+    text {
+      font-size: 9px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      fill: var(--color-danger-ink);
+    }
+  }
+
+  &__anno {
+    rect {
+      fill: var(--color-primary);
+    }
+
+    text {
+      font-size: 9px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      fill: var(--color-text-inverse);
+    }
+  }
+
+  &__anno-leader {
+    stroke: var(--color-primary);
+    stroke-width: 1;
+  }
+
+  &__halo {
+    fill: none;
+    stroke: var(--color-primary);
+    stroke-width: 2;
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: chart-halo 600ms ease-out 750ms 2;
   }
 
   &__band {
@@ -364,6 +468,18 @@ const tooltip = computed(() => {
 @keyframes chart-fade {
   from {
     opacity: 0;
+  }
+}
+
+@keyframes chart-halo {
+  0% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(2.4);
   }
 }
 </style>
