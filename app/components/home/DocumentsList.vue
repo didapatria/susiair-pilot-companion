@@ -1,6 +1,10 @@
 <script setup lang="ts">
 const store = useDocumentsStore()
 const { documents } = storeToRefs(store)
+
+const expiredCount = computed(() => documents.value.filter(d => d.tone === 'danger').length)
+const soonCount = computed(() => documents.value.filter(d => d.tone === 'warning').length)
+const hasAlerts = computed(() => expiredCount.value + soonCount.value > 0)
 </script>
 
 <template>
@@ -8,6 +12,11 @@ const { documents } = storeToRefs(store)
     <h2 id="documents-title" class="section-title documents__title">My documents</h2>
 
     <AppCard>
+      <p v-if="store.status === 'ready' && hasAlerts" class="documents__summary">
+        <span v-if="expiredCount" class="documents__summary-expired">{{ expiredCount }} expired</span>
+        <span v-if="expiredCount && soonCount" aria-hidden="true"> · </span>
+        <span v-if="soonCount" class="documents__summary-soon">{{ soonCount }} expiring soon</span>
+      </p>
       <ul v-if="store.status === 'ready'">
         <DocumentItem v-for="doc in documents" :key="doc.id" :doc="doc" />
       </ul>
@@ -29,6 +38,23 @@ const { documents } = storeToRefs(store)
 .documents {
   &__title {
     margin-bottom: var(--space-3);
+  }
+
+  &__summary {
+    @include type('body-sm');
+    @include numeric;
+    padding-bottom: var(--space-3);
+    margin-bottom: var(--space-1);
+    font-weight: 600;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  &__summary-expired {
+    color: var(--color-danger-ink);
+  }
+
+  &__summary-soon {
+    color: var(--color-warning-ink);
   }
 
   &__skeleton {

@@ -7,7 +7,11 @@ defineProps<{ doc: DocumentView }>()
 
 <template>
   <li class="document-item">
-    <div class="document-item__icon" aria-hidden="true">
+    <div
+      class="document-item__icon"
+      :class="doc.tone !== 'success' ? `document-item__icon--${doc.tone}` : undefined"
+      aria-hidden="true"
+    >
       <FileText :size="18" :stroke-width="1.75" />
     </div>
     <div class="document-item__text">
@@ -39,6 +43,16 @@ defineProps<{ doc: DocumentView }>()
     background: var(--color-navy-soft);
     border-radius: var(--radius-full);
     color: var(--color-primary);
+
+    &--danger {
+      background: var(--color-danger-soft);
+      color: var(--color-danger-ink);
+    }
+
+    &--warning {
+      background: var(--color-warning-soft);
+      color: var(--color-warning-ink);
+    }
   }
 
   &__text {
