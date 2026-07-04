@@ -1,4 +1,9 @@
 <script setup lang="ts">
+defineProps<{
+  /** Optional duty counts for the displayed month, keyed by legend code */
+  counts?: Map<string, number>
+}>()
+
 const store = useScheduleStore()
 const { legend } = storeToRefs(store)
 </script>
@@ -11,6 +16,7 @@ const { legend } = storeToRefs(store)
         <span class="calendar-legend__dot" :style="{ backgroundColor: item.color }" aria-hidden="true" />
         <span class="calendar-legend__label">{{ item.label }}</span>
         <span class="calendar-legend__code">{{ item.code }}</span>
+        <span v-if="counts?.get(item.code)" class="calendar-legend__count">×{{ counts.get(item.code) }}</span>
       </li>
     </ul>
   </AppCard>
@@ -57,6 +63,13 @@ const { legend } = storeToRefs(store)
     @include type('micro');
     font-weight: 600;
     color: var(--color-text-secondary);
+  }
+
+  &__count {
+    @include type('micro');
+    @include numeric;
+    font-weight: 700;
+    color: var(--color-primary);
   }
 }
 </style>

@@ -48,6 +48,11 @@ function dutyLabel(record: ScheduleRecord): string {
       font-weight: 600;
       color: var(--color-text-secondary);
       text-align: center;
+
+      // Weekend headers read slightly stronger
+      &:nth-child(n+6) {
+        color: var(--color-text);
+      }
     }
   }
 
@@ -55,6 +60,12 @@ function dutyLabel(record: ScheduleRecord): string {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 4px;
+
+    // Subtle weekend column tint (Sat/Sun in a Monday-start grid)
+    > :nth-child(7n+6),
+    > :nth-child(7n) {
+      background: rgba(14, 33, 56, 0.03);
+    }
   }
 }
 </style>

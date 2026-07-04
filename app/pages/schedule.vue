@@ -32,6 +32,17 @@ const selectedDutyLabel = computed(() =>
     ? store.legendByCode.get(selected.value.duty_type)?.label ?? selected.value.duty_type
     : '',
 )
+
+/** Duty counts within the displayed month, keyed by duty_type (legend "×n" suffixes). */
+const monthCounts = computed(() => {
+  const prefix = `${current.value.year}-${String(current.value.month).padStart(2, '0')}`
+  const counts = new Map<string, number>()
+  for (const [date, record] of store.byDate) {
+    if (date.startsWith(prefix))
+      counts.set(record.duty_type, (counts.get(record.duty_type) ?? 0) + 1)
+  }
+  return counts
+})
 </script>
 
 <template>
@@ -52,7 +63,7 @@ const selectedDutyLabel = computed(() =>
           @select="openSheet"
         />
       </section>
-      <CalendarLegend class="appear" />
+      <CalendarLegend class="appear" :counts="monthCounts" />
     </template>
 
     <template v-else>
