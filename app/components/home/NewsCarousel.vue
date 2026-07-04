@@ -6,6 +6,7 @@ const items = [
     id: 'fleet',
     category: 'Fleet',
     icon: Plane,
+    edge: 'var(--color-primary)',
     title: 'Two more Grand Caravans join the eastern fleet',
     date: '2026-05-28',
   },
@@ -13,6 +14,7 @@ const items = [
     id: 'route',
     category: 'Route',
     icon: MapIcon,
+    edge: 'var(--color-chart-accent)',
     title: 'New scheduled service: Manokwari–Kebar twice weekly',
     date: '2026-05-26',
   },
@@ -20,6 +22,7 @@ const items = [
     id: 'safety',
     category: 'Safety',
     icon: ShieldCheck,
+    edge: 'var(--color-success)',
     title: 'Wet-season SOP refresher due before June rotations',
     date: '2026-05-24',
   },
@@ -35,6 +38,7 @@ const items = [
       :title="item.title"
       :date="item.date"
       :icon="item.icon"
+      :edge="item.edge"
     />
   </div>
 </template>

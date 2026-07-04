@@ -56,6 +56,12 @@ async function onSubmit() {
     </AppCard>
 
     <a class="signin__help" href="tel:+628112129909">Need help? Contact CRD</a>
+
+    <footer class="signin__brandline">
+      <span class="signin__stripe" aria-hidden="true" />
+      <p class="signin__tagline">Reaching the unreachable</p>
+      <p class="signin__tagsub">Pioneer flight operations across Indonesia</p>
+    </footer>
   </div>
 </template>
 
@@ -117,6 +123,35 @@ async function onSubmit() {
     @include type('body-sm');
     font-weight: 600;
     color: var(--color-primary);
+  }
+
+  &__brandline {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: auto;
+    padding-top: var(--space-10);
+    padding-bottom: max(env(safe-area-inset-bottom), var(--space-6));
+    text-align: center;
+  }
+
+  &__stripe {
+    @include stripe(44px);
+    margin-bottom: var(--space-1);
+  }
+
+  &__tagline {
+    @include type('micro');
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+  }
+
+  &__tagsub {
+    @include type('label');
+    color: var(--color-text-secondary);
   }
 }
 </style>

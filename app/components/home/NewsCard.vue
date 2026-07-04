@@ -6,13 +6,15 @@ defineProps<{
   title: string
   date: string
   icon: Component
+  /** Category accent for the left edge (CSS color) */
+  edge: string
 }>()
 </script>
 
 <template>
-  <article class="news-card">
+  <article class="news-card" :style="{ '--edge': edge }">
     <div class="news-card__thumb" aria-hidden="true">
-      <component :is="icon" :size="32" :stroke-width="1.75" />
+      <component :is="icon" :size="28" :stroke-width="1.75" />
     </div>
     <div class="news-card__body">
       <span class="news-card__category">{{ category }}</span>
@@ -28,15 +30,16 @@ defineProps<{
   scroll-snap-align: start;
   overflow: hidden;
   background: var(--color-surface);
+  border-left: 3px solid var(--edge);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
 
   &__thumb {
     display: grid;
     place-items: center;
-    height: 112px;
-    background: var(--color-surface-navy);
-    color: rgba(255, 255, 255, 0.6);
+    height: 88px;
+    background: var(--color-navy-soft);
+    color: var(--color-primary);
   }
 
   &__body {
