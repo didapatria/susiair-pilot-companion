@@ -6,6 +6,10 @@ A mobile-first pilot logbook & schedule companion, built as the Susi Air fronten
 
 **Live demo:** https://susiair-pilot-companion.vercel.app — sign in with any non-empty username/password (no real authentication, per the brief).
 
+<p align="center">
+  <img src="docs/demo.gif" alt="30-second walkthrough: sign in, dashboard with rolling-limit chart, over-limit annotation on the 1m view, keyboard-navigated duty calendar" width="390">
+</p>
+
 Three screens: **Sign In**, **Home** (dashboard with the Hours-to-Limit section), and **Schedule** (duty calendar). Logbook and More are intentional placeholders reachable from the bottom navigation.
 
 | Sign in | Home | Hours (1w) | Hours (1m, over limit) |
@@ -62,6 +66,31 @@ Y(D) = sum of flight hours from (D − windowDays + 1) up to and including D
 - Implementation: one prefix-sum array over the contiguous daily series, built in **integer tenths** (the dataset is 1-decimal throughout, so this is lossless and 365-day sums accumulate zero floating-point drift). Each query is O(1) with clamping at both dataset edges.
 - The engine is a pure module (`app/utils/rollingHours.ts`) with no framework imports, unit-tested against precomputed fixtures: all four card values, the complete 15-point 1w and 1m series, the exact dates where the 1m series exceeds its 100 h limit, spot values for 3m/6m/1y, and the dataset integrity check (the entries sum to `pilot.totalFlightHours`, 1,444.5).
 
+## Architecture
+
+```mermaid
+flowchart LR
+  subgraph app [Nuxt app]
+    P["pages/\nindex · home · schedule"] --> C["components/\nui · home · charts · schedule"]
+    C --> U["useRollingHours\n(composable)"]
+    U --> E["rollingHours engine\npure module, prefix sums"]
+    P --> S["Pinia stores\nflightHours · documents · schedule"]
+    C --> S
+    U --> S
+  end
+  S --> J["static JSON\napp/assets/data/*.json"]
+  T["Vitest fixtures\ntests/unit"] -.assert.-> E
+```
+
+Data flows one way: static JSON → stores (`load()` behind ~400 ms simulated latency) → pure rolling engine → components. Nothing in the UI computes hours on its own.
+
+## Testing & CI
+
+- **CI (GitHub Actions)** runs the deterministic checks on every push: `typecheck`, `lint`, unit tests, `build`.
+- **Locally** the Playwright suite adds what CI can't run reliably: functional flows, keyboard-only navigation (roving calendar grid, dialog focus contract), reduced-motion smoke, axe accessibility scans on all three routes, and screenshot regression.
+- Visual specs are tagged `@visual` with committed baselines (rendered on macOS; font rasterization differs across platforms, which is why they stay out of CI). Run them with `pnpm test:e2e --grep @visual`, regenerate deliberately with `--update-snapshots`.
+- The rolling-sum engine is verified against precomputed fixtures in `tests/unit/rollingHours.spec.ts` — card values, both full 15-point series, exact over-limit dates, and dataset integrity.
+
 ## Project structure
 
 ```
@@ -94,7 +123,5 @@ tests/
 - i18n (id/en).
 - A full Logbook screen with a virtualized entry list.
 - MSW contract mocks so a real API can be swapped in without touching stores.
-- Visual regression tests on the chart (the over-limit rendering is screenshot-worthy).
 - Chart pan/zoom and pinch gestures for longer ranges.
 - Offline-first PWA with background sync (the current PWA ships manifest + icons).
-- E2E coverage beyond the smoke pass (error states, reduced-motion, keyboard-only flows).
