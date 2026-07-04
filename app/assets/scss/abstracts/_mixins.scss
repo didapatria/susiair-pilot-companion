@@ -26,6 +26,22 @@
   }
 }
 
+// Livery stripe: flat two-segment mark (red + navy, hard stops — no soft gradient).
+@mixin stripe($width: 44px, $height: 2px) {
+  $red: $width * 0.35;
+
+  display: block;
+  width: $width;
+  height: $height;
+  border-radius: $height;
+  background: linear-gradient(
+    to right,
+    map.get(t.$colors, 'accent') 0 $red,
+    transparent $red ($red + 3px),
+    map.get(t.$colors, 'primary') ($red + 3px) 100%
+  );
+}
+
 @mixin visually-hidden {
   position: absolute;
   width: 1px;

@@ -1,4 +1,5 @@
 @use '../abstracts/tokens' as t;
+@use '../abstracts/mixins' as m;
 
 :root {
   @each $k, $v in t.$colors {
@@ -67,6 +68,23 @@ body {
   line-height: 1.35;
   font-weight: 600;
   color: var(--color-primary);
+
+  &::after {
+    content: '';
+    margin-top: 6px;
+    @include m.stripe(28px);
+  }
+}
+
+// Content entrance once its store is ready (pairs with skeleton removal)
+.appear {
+  animation: appear 150ms ease-out both;
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+  }
 }
 
 .page-title {

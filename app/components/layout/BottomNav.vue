@@ -41,6 +41,7 @@ const route = useRoute()
   border-top: 1px solid var(--color-border);
 
   &__item {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -54,6 +55,16 @@ const route = useRoute()
 
       .bottom-nav__label {
         font-weight: 600;
+      }
+
+      // Livery-stripe active indicator: a non-color cue on top of color+weight.
+      &::before {
+        content: '';
+        position: absolute;
+        top: 6px;
+        left: 50%;
+        transform: translateX(-50%);
+        @include stripe(20px, 3px);
       }
     }
   }
