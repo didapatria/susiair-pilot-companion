@@ -19,7 +19,7 @@ const over = computed(() => remaining.value < 0)
   <AppCard class="limit-card">
     <div class="limit-card__info">
       <p class="limit-card__label">{{ meta.title }}</p>
-      <p class="limit-card__hours">{{ formatHours(card.hours) }}</p>
+      <p class="limit-card__hours"><CountUp :value="card.hours" :format="formatHours" /></p>
       <p class="limit-card__limit">of {{ card.limit }} h</p>
       <p class="limit-card__footer" :class="{ 'limit-card__footer--over': over }">
         {{ over ? `${formatHours(-remaining)} h over` : `${formatHours(remaining)} h left` }}

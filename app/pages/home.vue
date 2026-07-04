@@ -13,16 +13,16 @@ useLazyAsyncData('home-data', async () => {
     <AppHeader />
 
     <div class="home__content page">
-      <UpcomingFlightCard class="home__overlap" />
+      <UpcomingFlightCard class="home__overlap home__rise" style="--i: 0" />
 
-      <section aria-labelledby="news-title">
+      <section class="home__rise" style="--i: 1" aria-labelledby="news-title">
         <h2 id="news-title" class="section-title home__section-title">Latest news</h2>
         <NewsCarousel />
       </section>
 
-      <HoursToLimitSection />
+      <HoursToLimitSection class="home__rise" style="--i: 2" />
 
-      <DocumentsList />
+      <DocumentsList class="home__rise" style="--i: 3" />
     </div>
   </div>
 </template>
@@ -41,6 +41,19 @@ useLazyAsyncData('home-data', async () => {
 
   &__section-title {
     margin-bottom: var(--space-3);
+  }
+
+  // Staggered section reveal on first paint
+  &__rise {
+    animation: home-rise 300ms cubic-bezier(0.2, 0, 0, 1) both;
+    animation-delay: calc(var(--i) * 40ms);
+  }
+}
+
+@keyframes home-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
   }
 }
 </style>

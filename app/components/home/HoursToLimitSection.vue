@@ -17,11 +17,11 @@ const ready = computed(() => store.status === 'ready')
     <h2 id="hours-title" class="section-title hours__title">Hours to limit</h2>
 
     <template v-if="ready && cards && series">
-      <div class="hours__grid">
+      <div class="hours__grid appear">
         <LimitCard v-for="card in cards" :key="card.key" :card="card" />
       </div>
 
-      <AppCard class="hours__chart">
+      <AppCard class="hours__chart appear">
         <div class="hours__chart-head">
           <h3 class="hours__chart-title">Flight hours</h3>
           <p class="hours__chart-sub">rolling {{ series.bounds.windowDays }} days</p>

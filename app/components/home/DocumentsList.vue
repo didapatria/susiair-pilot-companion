@@ -17,7 +17,7 @@ const hasAlerts = computed(() => expiredCount.value + soonCount.value > 0)
         <span v-if="expiredCount && soonCount" aria-hidden="true"> · </span>
         <span v-if="soonCount" class="documents__summary-soon">{{ soonCount }} expiring soon</span>
       </p>
-      <ul v-if="store.status === 'ready'">
+      <ul v-if="store.status === 'ready'" class="appear">
         <DocumentItem v-for="doc in documents" :key="doc.id" :doc="doc" />
       </ul>
       <div v-else class="documents__skeleton" aria-hidden="true">

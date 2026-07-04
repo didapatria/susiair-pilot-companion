@@ -40,18 +40,19 @@ const selectedDutyLabel = computed(() =>
 
     <template v-if="store.status === 'ready'">
       <CalendarMonth
+        class="appear"
         :year="current.year"
         :month="current.month"
         @change="(year, month) => current = { year, month }"
       />
-      <section aria-label="Duty calendar">
+      <section class="appear" aria-label="Duty calendar">
         <CalendarGrid
           :year="current.year"
           :month="current.month"
           @select="openSheet"
         />
       </section>
-      <CalendarLegend />
+      <CalendarLegend class="appear" />
     </template>
 
     <template v-else>

@@ -24,13 +24,13 @@ const bellLabel = computed(() =>
 <template>
   <header class="app-header">
     <div class="app-header__inner page">
-      <div class="app-header__identity">
+      <div class="app-header__identity" :class="{ appear: flightStore.status === 'ready' }">
         <template v-if="flightStore.status === 'ready' && pilot">
           <p class="app-header__welcome">Welcome back,</p>
           <h1 class="app-header__name">{{ pilot.name }}</h1>
           <p class="app-header__hours">
             <span class="visually-hidden">Total flight hours: </span>
-            {{ formatHours(pilot.totalFlightHours) }}<span class="app-header__hours-unit" aria-hidden="true"> h</span>
+            <CountUp :value="pilot.totalFlightHours" :format="formatHours" /><span class="app-header__hours-unit" aria-hidden="true"> h</span>
           </p>
         </template>
         <template v-else>
