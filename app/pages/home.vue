@@ -21,6 +21,8 @@ useLazyAsyncData('home-data', async () => {
       </section>
 
       <HoursToLimitSection />
+
+      <DocumentsList />
     </div>
   </div>
 </template>
