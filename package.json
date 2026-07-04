@@ -24,6 +24,7 @@
     "@nuxt/eslint": "^1.16.0",
     "@nuxt/fonts": "^0.14.0",
     "@playwright/test": "^1.61.1",
+    "@vite-pwa/nuxt": "^1.1.1",
     "@vue/test-utils": "^2.4.11",
     "eslint": "^10.6.0",
     "happy-dom": "^20.10.6",
