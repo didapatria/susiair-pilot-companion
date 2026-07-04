@@ -1,5 +1,6 @@
 export default defineNuxtConfig({
   compatibilityDate: '2026-07-04',
+  devtools: { enabled: false },
   modules: ['@pinia/nuxt', '@nuxt/eslint', '@nuxt/fonts'],
   css: ['~/assets/scss/main.scss'],
   components: [{ path: '~/components', pathPrefix: false }],
