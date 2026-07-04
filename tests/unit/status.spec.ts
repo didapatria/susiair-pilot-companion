@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { documentStatusCopy, documentTone, yiqTextColor } from '~/utils/status'
+import { contrastInk, documentStatusCopy, documentTone } from '~/utils/status'
 
 describe('documentTone (warningDays = 30 from the JSON)', () => {
   it.each([
@@ -29,15 +29,15 @@ describe('documentStatusCopy', () => {
   })
 })
 
-describe('yiqTextColor over the 10 legend colors', () => {
-  it.each(['#FBA577', '#F59E0B', '#9CA3AF'])('%s → navy text', (hex) => {
-    expect(yiqTextColor(hex)).toBe('#0E2138')
-  })
-
-  it.each(['#10B981', '#0EA5E9', '#EF4444', '#7C3AED', '#475569', '#7C2D12', '#111827'])(
-    '%s → white text',
+describe('contrastInk over the 10 legend colors (WCAG ratio pick)', () => {
+  it.each(['#FBA577', '#F59E0B', '#9CA3AF', '#10B981', '#0EA5E9', '#EF4444'])(
+    '%s → navy ink',
     (hex) => {
-      expect(yiqTextColor(hex)).toBe('#FFFFFF')
+      expect(contrastInk(hex)).toBe('#0E2138')
     },
   )
+
+  it.each(['#475569', '#7C2D12', '#7C3AED', '#111827'])('%s → white ink', (hex) => {
+    expect(contrastInk(hex)).toBe('#FFFFFF')
+  })
 })

@@ -51,7 +51,7 @@ test('sign in, browse the dashboard and open the schedule', async ({ page }) => 
   await page.waitForTimeout(700)
   await page.screenshot(shot('schedule-may'))
 
-  await page.getByRole('button', { name: /31 May, On Duty MKW, 2 flights scheduled/ }).click()
+  await page.getByRole('button', { name: /^31 2 MKW/ }).click()
   await expect(page.getByText('Detail page coming soon.')).toBeVisible()
   await page.waitForTimeout(400)
   await page.screenshot(shot('schedule-tap'))

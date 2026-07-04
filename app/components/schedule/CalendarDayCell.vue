@@ -2,7 +2,7 @@
 import { Check } from 'lucide-vue-next'
 import type { MonthCell } from '~/utils/date'
 import type { ScheduleRecord } from '~/types/data'
-import { yiqTextColor } from '~/utils/status'
+import { contrastInk } from '~/utils/status'
 
 const props = defineProps<{
   cell: MonthCell
@@ -20,18 +20,20 @@ const complete = computed(() =>
 
 const chipStyle = computed(() =>
   props.record
-    ? { backgroundColor: props.record.base_color, color: yiqTextColor(props.record.base_color) }
+    ? { backgroundColor: props.record.base_color, color: contrastInk(props.record.base_color) }
     : undefined,
 )
 
-const ariaLabel = computed(() => {
-  if (!props.record) return undefined
+// Screen-reader detail appended after the visible text (day, badge, chip), so the
+// accessible name always contains the visible label (WCAG 2.5.3 / axe name-mismatch).
+const srDetail = computed(() => {
+  if (!props.record) return ''
   const r = props.record
   const flights = (n: number) => `${n} flight${n === 1 ? '' : 's'}`
   const counts = complete.value
     ? `all ${flights(r.count_schedules)} logged`
     : `${flights(r.count_schedules)} scheduled, ${r.count_logbooks} logged`
-  return `${formatDayMonth(props.cell.iso)}, ${props.dutyLabel} ${r.base_name}, ${counts}`
+  return `, ${formatDayMonth(props.cell.iso)}, ${props.dutyLabel}, ${counts}`
 })
 </script>
 
@@ -45,17 +47,17 @@ const ariaLabel = computed(() => {
       'day-cell--today': isToday,
     }"
     :type="record && cell.inMonth ? 'button' : undefined"
-    :aria-label="ariaLabel"
     @click="record && cell.inMonth && emit('select', record, $event)"
   >
-    <span class="day-cell__number" aria-hidden="true">{{ cell.day }}</span>
+    <span class="day-cell__number">{{ cell.day }}</span>
 
     <template v-if="record && cell.inMonth">
       <span v-if="complete" class="day-cell__tick" aria-hidden="true">
         <Check :size="11" :stroke-width="2.5" />
       </span>
-      <span v-else class="day-cell__count" aria-hidden="true">{{ record.count_schedules }}</span>
-      <span class="day-cell__chip" :style="chipStyle" aria-hidden="true">{{ record.base_name }}</span>
+      <span v-else class="day-cell__count">{{ record.count_schedules }}</span>
+      <span class="day-cell__chip" :style="chipStyle">{{ record.base_name }}</span>
+      <span class="visually-hidden">{{ srDetail }}</span>
     </template>
   </component>
 </template>
@@ -89,7 +91,7 @@ const ariaLabel = computed(() => {
   }
 
   &--out .day-cell__number {
-    color: #C3C9D4;
+    color: var(--color-text-secondary);
   }
 
   &__number {
@@ -132,8 +134,9 @@ const ariaLabel = computed(() => {
   &__chip {
     display: block;
     padding: 2px 0;
-    @include type('micro');
-    font-weight: 700;
+    font-size: 11px;
+    line-height: 1.2;
+    font-weight: 600;
     text-align: center;
     border-radius: var(--radius-xs);
   }

@@ -20,10 +20,23 @@ export function documentStatusCopy(daysRemaining: number): string {
   return `${daysRemaining} day${daysRemaining === 1 ? '' : 's'} left`
 }
 
-/** Auto-contrast for colored calendar chips: YIQ ≥ 150 → navy text, else white. */
-export function yiqTextColor(hex: string): '#0E2138' | '#FFFFFF' {
-  const r = parseInt(hex.slice(1, 3), 16)
-  const g = parseInt(hex.slice(3, 5), 16)
-  const b = parseInt(hex.slice(5, 7), 16)
-  return (r * 299 + g * 587 + b * 114) / 1000 >= 150 ? '#0E2138' : '#FFFFFF'
+function relativeLuminance(hex: string): number {
+  const [r, g, b] = [1, 3, 5].map((i) => {
+    const c = parseInt(hex.slice(i, i + 2), 16) / 255
+    return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4
+  })
+  return 0.2126 * r! + 0.7152 * g! + 0.0722 * b!
+}
+
+const NAVY_LUMINANCE = relativeLuminance('#0E2138')
+
+/**
+ * Auto-contrast ink for colored calendar chips: picks navy or white by true
+ * WCAG contrast ratio, whichever reads better on the given fill.
+ */
+export function contrastInk(bgHex: string): '#0E2138' | '#FFFFFF' {
+  const bg = relativeLuminance(bgHex)
+  const navyRatio = (Math.max(bg, NAVY_LUMINANCE) + 0.05) / (Math.min(bg, NAVY_LUMINANCE) + 0.05)
+  const whiteRatio = 1.05 / (bg + 0.05)
+  return navyRatio >= whiteRatio ? '#0E2138' : '#FFFFFF'
 }
