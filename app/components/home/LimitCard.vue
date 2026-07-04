@@ -51,9 +51,8 @@ const over = computed(() => remaining.value < 0)
   }
 
   &__hours {
-    @include type('title-lg');
+    @include type('metric');
     @include numeric;
-    font-weight: 800;
     color: var(--color-primary);
     white-space: nowrap;
   }

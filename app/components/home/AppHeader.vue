@@ -30,7 +30,7 @@ const bellLabel = computed(() =>
           <h1 class="app-header__name">{{ pilot.name }}</h1>
           <p class="app-header__hours">
             <span class="visually-hidden">Total flight hours: </span>
-            {{ formatHoursLabel(pilot.totalFlightHours) }}
+            {{ formatHours(pilot.totalFlightHours) }}<span class="app-header__hours-unit" aria-hidden="true"> h</span>
           </p>
         </template>
         <template v-else>
@@ -90,10 +90,15 @@ const bellLabel = computed(() =>
     @include numeric;
     margin-top: var(--space-1);
     padding: 4px 12px;
-    font-weight: 700;
+    font-weight: 800;
     color: var(--color-text-inverse);
     background: var(--color-white-soft);
     border-radius: var(--radius-full);
+  }
+
+  &__hours-unit {
+    font-weight: 500;
+    opacity: 0.8;
   }
 
   &__actions {

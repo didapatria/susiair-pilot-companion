@@ -49,7 +49,7 @@ function onKeydown(event: KeyboardEvent) {
   border-radius: var(--radius-pill);
 
   &__segment {
-    min-height: 36px;
+    min-height: 44px;
     border-radius: var(--radius-pill);
     @include type('label');
     @include numeric;
