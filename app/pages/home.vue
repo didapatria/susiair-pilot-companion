@@ -19,6 +19,8 @@ useLazyAsyncData('home-data', async () => {
         <h2 id="news-title" class="section-title home__section-title">Latest news</h2>
         <NewsCarousel />
       </section>
+
+      <HoursToLimitSection />
     </div>
   </div>
 </template>
