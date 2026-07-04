@@ -3,12 +3,16 @@
     <main class="app-layout__page">
       <slot />
     </main>
+    <BottomNav />
   </div>
 </template>
 
 <style lang="scss" scoped>
 .app-layout {
   min-height: 100dvh;
-  padding-bottom: var(--space-24);
+
+  &__page {
+    padding-bottom: var(--space-24);
+  }
 }
 </style>

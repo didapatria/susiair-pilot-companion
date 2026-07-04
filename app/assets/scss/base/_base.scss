@@ -48,6 +48,35 @@ body {
   }
 }
 
+.page-title {
+  padding-top: var(--space-6);
+  margin-bottom: var(--space-4);
+  font-size: 20px;
+  line-height: 1.3;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+// Page transitions (NuxtPage `page`, mode out-in)
+.page-enter-active {
+  transition:
+    opacity var(--motion-base) cubic-bezier(0.2, 0, 0, 1),
+    transform var(--motion-base) cubic-bezier(0.2, 0, 0, 1);
+}
+
+.page-leave-active {
+  transition: opacity var(--motion-base) cubic-bezier(0.4, 0, 1, 1);
+}
+
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+.page-leave-to {
+  opacity: 0;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
