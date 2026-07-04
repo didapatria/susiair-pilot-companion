@@ -1,0 +1,35 @@
+# CI runs the deterministic checks: typecheck, lint, unit tests, build.
+# The Playwright e2e suite and the @visual screenshot specs run locally instead:
+# e2e drives a real browser against a dev server, and the visual baselines are
+# font-rendering sensitive across platforms (see README "Testing & CI").
+name: CI
+
+on:
+  push:
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm typecheck
+
+      - run: pnpm lint
+
+      - run: pnpm test
+
+      - run: pnpm build

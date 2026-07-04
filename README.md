@@ -1,5 +1,7 @@
 # Susi Air Pilot Companion
 
+[![CI](https://github.com/didapatria/susiair-pilot-companion/actions/workflows/ci.yml/badge.svg)](https://github.com/didapatria/susiair-pilot-companion/actions/workflows/ci.yml)
+
 A mobile-first pilot logbook & schedule companion, built as the Susi Air frontend technical test.
 
 **Live demo:** https://susiair-pilot-companion.vercel.app — sign in with any non-empty username/password (no real authentication, per the brief).
