@@ -45,11 +45,11 @@ withDefaults(defineProps<{
 
   &--primary {
     width: 100%;
-    background: var(--color-accent);
+    background: var(--color-accent-strong);
     color: var(--color-text-inverse);
 
     &:active {
-      background: color-mix(in srgb, var(--color-accent) 94%, black);
+      background: color-mix(in srgb, var(--color-accent-strong) 94%, black);
     }
   }
 

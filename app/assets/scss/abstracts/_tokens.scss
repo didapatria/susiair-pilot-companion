@@ -4,11 +4,13 @@
 $colors: (
   'primary': #0E2138,
   'accent': #E63757,
+  // Slightly deepened brand red for filled CTAs: white label reaches 4.5:1.
+  'accent-strong': #D92B4C,
   'bg': #F5F6F8,
   'surface': #FFFFFF,
   'surface-navy': #0E2138,
   'text': #0E2138,
-  'text-secondary': #6B7280,
+  'text-secondary': #5D6878, // ≥ 4.5:1 on both bg and surface at 13px
   'text-inverse': #FFFFFF,
   'border': #E8ECF1,
   'success': #1FBF8F,

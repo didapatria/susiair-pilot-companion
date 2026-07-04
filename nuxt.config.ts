@@ -7,10 +7,12 @@ export default defineNuxtConfig({
   app: {
     pageTransition: { name: 'page', mode: 'out-in' },
     head: {
+      htmlAttrs: { lang: 'en' },
       title: 'Susi Air Pilot Companion',
       meta: [
         { name: 'viewport', content: 'width=device-width, initial-scale=1, viewport-fit=cover' },
         { name: 'theme-color', content: '#0E2138' },
+        { name: 'description', content: 'Pilot logbook and schedule companion for Susi Air operations: duty calendar, flight-hour limits and document expiries.' },
       ],
       link: [
         { rel: 'icon', type: 'image/png', href: '/icons/icon-192.png' },

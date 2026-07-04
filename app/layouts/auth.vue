@@ -1,6 +1,8 @@
 <template>
   <div class="auth-layout">
-    <slot />
+    <main class="auth-layout__main">
+      <slot />
+    </main>
   </div>
 </template>
 
@@ -9,5 +11,11 @@
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
+
+  &__main {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
 }
 </style>
