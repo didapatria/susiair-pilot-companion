@@ -30,7 +30,13 @@ const items = [
 </script>
 
 <template>
-  <div class="news-carousel">
+  <!-- Focusable scroll region: keyboard users can scroll the carousel (axe: scrollable-region-focusable) -->
+  <div
+    class="news-carousel"
+    role="region"
+    aria-label="Latest news carousel"
+    tabindex="0"
+  >
     <NewsCard
       v-for="item in items"
       :key="item.id"

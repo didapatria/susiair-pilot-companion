@@ -209,6 +209,7 @@ const tooltip = computed(() => {
         <path
           v-if="hasOver"
           class="trend-chart__band"
+          data-testid="chart-over-band"
           :d="overBandPath"
           :clip-path="`url(#${clipId})`"
         />
@@ -220,6 +221,7 @@ const tooltip = computed(() => {
         <polyline
           v-if="hasOver"
           class="trend-chart__line trend-chart__line--over"
+          data-testid="chart-over-segment"
           :points="polylinePoints"
           pathLength="1"
           :clip-path="`url(#${clipId})`"
@@ -243,7 +245,7 @@ const tooltip = computed(() => {
         />
 
         <!-- Peak annotation: the window's story, shown only when the peak exceeds the limit -->
-        <g v-if="annotation" class="trend-chart__anno">
+        <g v-if="annotation" class="trend-chart__anno" data-testid="chart-peak-annotation">
           <line
             class="trend-chart__anno-leader"
             :x1="annotation.px"
