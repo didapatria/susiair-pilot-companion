@@ -33,7 +33,9 @@ async function onSubmit() {
     </header>
 
     <AppCard class="signin__card">
-      <form class="signin__form" novalidate @submit.prevent="onSubmit">
+      <!-- The inline onsubmit ships in the SSR HTML, so a submit fired before
+           hydration can never fall back to a native GET (credentials in the URL). -->
+      <form class="signin__form" novalidate onsubmit="return false" @submit.prevent="onSubmit">
         <AppTextField
           v-model="username"
           label="Username"
